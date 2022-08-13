@@ -1,5 +1,5 @@
 class DefaultError extends Error {
-  constructor({ message }) {
+  constructor(message) {
     super(message);
     this.name = 'DefaultError';
     this.statusCode = 500;
