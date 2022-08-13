@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  // у пользователя есть имя, информация о нем и его аватар — опишем требования к имени в схеме:
   name: {
     type: String,
     require: true,
