@@ -28,7 +28,7 @@ const getUserById = ((req, res) => {
     });
 });
 
-const createUser = ((req, res) => {
+const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
@@ -40,9 +40,9 @@ const createUser = ((req, res) => {
         res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
     });
-});
+};
 
-const updateUserInfo = ((req, res) => {
+const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
 
   if (!name || !about) {
@@ -65,9 +65,9 @@ const updateUserInfo = ((req, res) => {
         res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
     });
-});
+};
 
-const updateUserAvatar = ((req, res) => {
+const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
@@ -86,7 +86,7 @@ const updateUserAvatar = ((req, res) => {
         res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
     });
-});
+};
 
 module.exports = {
   createUser, getUsers, getUserById, updateUserInfo, updateUserAvatar,

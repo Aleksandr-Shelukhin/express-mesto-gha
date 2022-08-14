@@ -3,14 +3,14 @@ const Card = require('../models/card');
 const NotFoundError = require('../errors/notFoundError');
 const errorCodes = require('../errors/errorsCode');
 
-const getCards = ((req, res) => {
+const getCards = (req, res) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(errorCodes.NotFoundError).send({ message: 'Карточка или пользователь не найден' }));
-});
+};
 
-const createCard = ((req, res) => {
+const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -23,9 +23,9 @@ const createCard = ((req, res) => {
         res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
     });
-});
+};
 
-const deleteCard = ((req, res) => {
+const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (!card) {
@@ -42,7 +42,7 @@ const deleteCard = ((req, res) => {
         res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
     });
-});
+};
 
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
