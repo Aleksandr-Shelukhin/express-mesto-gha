@@ -22,8 +22,9 @@ const getUserById = ((req, res) => {
         res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
       } else if (err.name === 'CastError') {
         res.status(errorCodes.ValidationError).send({ message: 'Пользователя с таким id не существует' });
+      } else {
+        res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
-      res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
     });
 });
 
@@ -59,9 +60,10 @@ const updateUserInfo = ((req, res) => {
       if (err instanceof NotFoundError) {
         res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
       } else if (err.name === 'ValidationError') {
-        res.status(errorCodes.ValidationError).send({ message: 'Пользователя с таким id не существует' });
+        res.status(errorCodes.ValidationError).send({ message: 'Введенеы неверные данные пользователя' });
+      } else {
+        res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
-      res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
     });
 });
 
@@ -79,9 +81,10 @@ const updateUserAvatar = ((req, res) => {
       if (err instanceof NotFoundError) {
         res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
       } else if (err.name === 'ValidationError') {
-        res.status(errorCodes.ValidationError).send({ message: 'Пользователя с таким id не существует' });
+        res.status(errorCodes.ValidationError).send({ message: 'Введенеы неверные данные пользователя' });
+      } else {
+        res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
-      res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
     });
 });
 

@@ -60,7 +60,7 @@ const likeCard = (req, res) => {
       if (err instanceof NotFoundError) {
         res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
       } else if (err.name === 'CastError') {
-        res.status(errorCodes.ValidationError).send({ message: 'Переданы некорректные данные для удаления карточки' });
+        res.status(errorCodes.ValidationError).send({ message: 'Переданы некорректные данные для удаления лайка' });
       } else {
         res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
       }
@@ -82,7 +82,7 @@ const dislikeCard = (req, res) => Card.findByIdAndUpdate(
     if (err instanceof NotFoundError) {
       res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
     } else if (err.name === 'CastError') {
-      res.status(errorCodes.ValidationError).send({ message: 'Переданы некорректные данные для удаления карточки' });
+      res.status(errorCodes.ValidationError).send({ message: 'Переданы некорректные данные для удаления лайка' });
     } else {
       res.status(errorCodes.DefaultError).send({ message: 'Произошла ошибка' });
     }
