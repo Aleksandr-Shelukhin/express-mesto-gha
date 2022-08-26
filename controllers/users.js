@@ -1,7 +1,10 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const NotFoundError = require('../errors/notFoundError');
 const errorCodes = require('../errors/errorsCode');
+const ValidationError = require('../errors/validationError');
 
 const getUsers = ((req, res) => {
   User.find({})
@@ -29,7 +32,13 @@ const getUserById = ((req, res) => {
 });
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
