@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 
-const NotFoundError = require('../errors/notFoundError');
+const NotFoundError = require('../errors/NotFoundError');
 const errorCodes = require('../errors/errorsCode');
 
 const getCards = (req, res) => {
