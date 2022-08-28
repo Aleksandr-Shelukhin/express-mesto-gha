@@ -46,9 +46,9 @@ const getUserById = ((req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof NotFoundError) {
-        res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
+        next(new NotFoundError('Запрашиваеме данные не найдены'));
       } else if (err.name === 'CastError') {
-        res.status(errorCodes.ValidationError).send({ message: 'Пользователя с таким id не существует' });
+        next(new ValidationError('Пользователя с таким id не существует'));
       } else {
         next(err);
       }
