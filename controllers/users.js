@@ -6,28 +6,25 @@ const errorCodes = require('../errors/errorsCode');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ConflictError = require('../errors/ConflictError');
-const AuthorizationError = require('../errors/AuthorizationError');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        next(new AuthorizationError('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            next(new AuthorizationError('Неправильные почта или пароль'));
-          }
-          const token = jwt.sign(
-            { _id: user._id },
-            'some-secret-key',
-            { expiresIn: '7d' },
-          );
-          res.send({ token });
-        });
-    });
+      // создаем токен
+      const { JWT_SECRET } = process.env;
+      const jwtToken = jwt.sign(
+        { _id: user._id },
+        JWT_SECRET,
+        { expiresIn: '7d' },
+      );
+      res.cookie('jwt', jwtToken, {
+        httpOnly: true,
+        sameSite: true,
+      });
+      res.send({ token: jwtToken });
+    })
+    .catch(next);
 };
 
 const getUsers = ((req, res, next) => {
