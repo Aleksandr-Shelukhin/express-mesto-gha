@@ -22,11 +22,13 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 // middleware
 app.post('/signup', signupValidate, createUser);
-app.post('/signin', signupValidate, login);
+app.post('/signin', signinValidate, login);
+
+app.use(auth);
+
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use(auth);
 app.use('*', (req, res) => {
   res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
 });

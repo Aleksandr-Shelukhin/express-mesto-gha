@@ -18,7 +18,8 @@ const createCard = (req, res, next) => {
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      // eslint-disable-next-line no-underscore-dangle
+      if (err.name === 'ValidationError' || err._message === 'card validation failed') {
         next(new ValidationError('Переданы некорректные данные для создания карточки'));
       } else {
         next(err);
@@ -41,9 +42,7 @@ const deleteCard = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError('Запрашиваеме данные не найдены'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new ValidationError('Переданы некорректные данные для удаления карточки'));
       } else {
         next(err);
@@ -64,9 +63,7 @@ const likeCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError('Запрашиваеме данные не найдены'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new ValidationError('Переданы некорректные данные для удаления лайка'));
       } else {
         next(err);
@@ -86,9 +83,7 @@ const dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
     res.send({ data: card });
   })
   .catch((err) => {
-    if (err instanceof NotFoundError) {
-      next(new NotFoundError('Запрашиваеме данные не найдены'));
-    } else if (err.name === 'CastError') {
+    if (err.name === 'CastError') {
       next(new ValidationError('Переданы некорректные данные для удаления лайка'));
     } else {
       next(err);

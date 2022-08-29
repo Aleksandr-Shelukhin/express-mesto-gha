@@ -9,9 +9,10 @@ const ConflictError = require('../errors/ConflictError');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
+  console.log(email, password);
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // создаем токен
+      console.log(user);
       const { JWT_SECRET } = process.env;
       const jwtToken = jwt.sign(
         { _id: user._id },
