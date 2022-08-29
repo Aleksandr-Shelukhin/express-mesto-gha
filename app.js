@@ -7,7 +7,7 @@ const { errors } = require('celebrate');
 const errorCodes = require('./errors/errorsCode');
 
 const { login, createUser } = require('./controllers/users');
-const { signupValidation, signinValidation } = require('./middlewares/validations');
+const { signupValidate, signinValidate } = require('./middlewares/validations');
 const auth = require('./middlewares/auth');
 const error = require('./middlewares/error');
 
@@ -21,8 +21,8 @@ app.use(express.json());
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 // middleware
-app.post('/signup', signupValidation, createUser);
-app.post('/signin', signinValidation, login);
+app.post('/signup', signupValidate, createUser);
+app.post('/signin', signupValidate, login);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
