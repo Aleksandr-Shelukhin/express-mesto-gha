@@ -6,24 +6,27 @@ const errorCodes = require('../errors/errorsCode');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ConflictError = require('../errors/ConflictError');
+const AuthorizationError = require('../errors/AuthorizationError');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email, password);
-  return User.findUserByCredentials(email, password)
+  User.findOne({ email }).select('+password')
     .then((user) => {
-      console.log(user);
-      const { JWT_SECRET } = process.env;
-      const jwtToken = jwt.sign(
-        { _id: user._id },
-        JWT_SECRET,
-        { expiresIn: '7d' },
-      );
-      res.cookie('jwt', jwtToken, {
-        httpOnly: true,
-        sameSite: true,
-      });
-      res.send({ token: jwtToken });
+      if (!user) {
+        throw new AuthorizationError('Неправильные почта или пароль');
+      }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new AuthorizationError('Неправильные почта или пароль');
+          }
+          const token = jwt.sign(
+            { _id: user._id },
+            'some-secret-key',
+            { expiresIn: '7d' },
+          );
+          res.send({ token });
+        });
     })
     .catch(next);
 };
@@ -43,9 +46,7 @@ const getUserById = ((req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError('Запрашиваеме данные не найдены'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new ValidationError('Пользователя с таким id не существует'));
       } else {
         next(err);
@@ -77,23 +78,16 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({
-      data: {
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-      },
-    }))
+    .then((user) => res.send(user.deletePasswordFromUser()))
     .catch((err) => {
+      // eslint-disable-next-line no-underscore-dangle
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError('Переданы некорректные данные при создании пользователя'));
+      } else if (err.code === errorCodes.ConflictError) {
+        next(new ConflictError('Пользователь с указанным email уже существует'));
+      } else {
+        next(err);
       }
-      if (err.code === 11000) {
-        next(new ConflictError('Такой email уже существует'));
-        return;
-      }
-      next(err);
     });
 };
 
@@ -108,9 +102,7 @@ const updateUserInfo = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.statusCode === errorCodes.NotFoundError) {
-        next(new NotFoundError('Запрашиваеме данные не найдены'));
-      } else if (err.statusCode === ValidationError || err.name === 'CastError') {
+      if (err.statusCode === ValidationError || err.name === 'CastError') {
         next(new ValidationError('Введенеы неверные данные пользователя'));
       } else {
         next(err);
@@ -129,10 +121,8 @@ const updateUserAvatar = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError('Запрашиваеме данные не найдены'));
-      } else if (err.name === 'ValidationError') {
-        next(new ValidationError('Введенеы неверные данные пользователя'));
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Введены неверные данные пользователя'));
       } else {
         next(err);
       }
