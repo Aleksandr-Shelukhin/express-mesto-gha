@@ -78,7 +78,7 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send(user))
+    .then((user) => res.send(user.deleteUserPassword()))
     .catch((err) => {
       // eslint-disable-next-line no-underscore-dangle
       if (err.name === 'ValidationError') {
