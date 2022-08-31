@@ -51,8 +51,7 @@ const getUserById = ((req, res, next) => {
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 });
 
 const getCurrentUser = (req, res, next) => {
@@ -74,6 +73,12 @@ const createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
+  User.findOne({ email })
+    .then((userFound) => {
+      if (userFound) {
+        throw new ConflictError('Пользователь с таким email уже зарегистрирован');
+      }
+    });
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,

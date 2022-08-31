@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-const errorCodes = require('./errors/errorsCode');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { login, createUser } = require('./controllers/users');
 const { signupValidate, signinValidate } = require('./middlewares/validations');
@@ -29,8 +29,8 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('*', (req, res) => {
-  res.status(errorCodes.NotFoundError).send({ message: 'Запрашиваеме данные не найдены' });
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Запрашиваеме данные не найдены'));
 });
 
 app.use(errors());
