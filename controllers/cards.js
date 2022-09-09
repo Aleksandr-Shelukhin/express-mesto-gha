@@ -6,7 +6,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => next(err));
 };
 
@@ -15,11 +15,19 @@ const createCard = (req, res, next) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       // eslint-disable-next-line no-underscore-dangle
-      if (err.name === 'ValidationError' || err._message === 'card validation failed') {
-        next(new ValidationError('Переданы некорректные данные для создания карточки'));
+      if (
+        err.name === 'ValidationError'
+        // eslint-disable-next-line no-underscore-dangle
+        || err._message === 'card validation failed'
+      ) {
+        next(
+          new ValidationError(
+            'Переданы некорректные данные для создания карточки',
+          ),
+        );
       } else {
         next(err);
       }
@@ -36,13 +44,16 @@ const deleteCard = (req, res, next) => {
       if (cardOwner !== req.user._id) {
         next(new ForbiddenError('Можно удалять только свои карточки'));
       } else {
-        Card.findByIdAndRemove(req.params.id)
-          .then((removedCard) => res.send(removedCard));
+        Card.findByIdAndRemove(req.params.id).then((removedCard) => res.send(removedCard));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные для удаления карточки'));
+        next(
+          new ValidationError(
+            'Переданы некорректные данные для удаления карточки',
+          ),
+        );
       } else {
         next(err);
       }
@@ -59,11 +70,13 @@ const likeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточки с таким id не существует');
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные для удаления лайка'));
+        next(
+          new ValidationError('Переданы некорректные данные для удаления лайка'),
+        );
       } else {
         next(err);
       }
@@ -79,16 +92,22 @@ const dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
     if (!card) {
       throw new NotFoundError('Карточки с таким id не существует');
     }
-    res.send({ data: card });
+    res.send(card);
   })
   .catch((err) => {
     if (err.name === 'CastError') {
-      next(new ValidationError('Переданы некорректные данные для удаления лайка'));
+      next(
+        new ValidationError('Переданы некорректные данные для удаления лайка'),
+      );
     } else {
       next(err);
     }
   });
 
 module.exports = {
-  getCards, createCard, deleteCard, likeCard, dislikeCard,
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
 };
