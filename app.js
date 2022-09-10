@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // подключаемся к серверу mongo
-mongoose.connect('mongodb://130.193.50.28:27017/mestodb');
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
 // middleware
 app.use(requestLogger); // подключаем логгер запросов
